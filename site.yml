@@ -1,0 +1,88 @@
+---
+# Upgrade MOS ceph on Ubuntu 14.04
+
+- hosts:
+    - mons
+    - osds
+    - rgws
+
+  become: True
+  pre_tasks:
+    - include: ./tasks/timesync.yml
+    - include: ./tasks/aptrepos.yml
+  vars:
+    use_mos_ceph: false
+    ceph_release: hammer
+    ceph_apt_repo:
+      url: "deb http://172.18.76.59/Public/repos/ceph {{ ceph_release }}-{{ os_release }} main"
+      label: "sa-{{ ceph_release }}-{{ os_release }}"
+      gpg_keyid: 69514C18 # A254F5F0
+      priority: 1050
+
+- hosts: mons
+  serial: 1
+  become: True
+  vars:
+    upgrade_ceph_packages: True
+    mon_group_name: mons
+    mon_restart_delay: 5
+    mon_restart_attempts: 20
+ 
+  roles:
+    - ceph-common
+    - ceph-mon
+
+  post_tasks:
+    - include: ./tasks/restart_mons.yml
+
+
+- hosts: osds
+  serial: 1
+  become: True
+  vars:
+    cluster_name: "ceph"
+    upgrade_ceph_packages: True
+    osd_group_name: osds
+    osd_restart_delay: 60
+    osd_restart_attempts: 10
+
+  pre_tasks:
+    - name: set OSD flags
+      command: ceph osd set {{ item }}
+      with_items:
+        - noout
+        - noscrub
+        - nodeep-scrub
+      delegate_to: "{{ groups.mons[0] }}"
+  
+  roles:
+    - ceph-common
+    - ceph-osd
+
+  post_tasks:
+    - include: ./tasks/restart_osds.yml
+    - name: unset OSD flags
+      command: ceph osd unset {{ item }}
+      with_items:
+        - noout
+        - noscrub
+        - nodeep-scrub
+      delegate_to: "{{ groups.mons[0] }}"
+
+
+- hosts: rgws
+  serial: 1
+  become: True
+  vars:
+    upgrade_ceph_packages: True
+    rgw_group_name: rgws
+
+  roles:
+    - ceph-common
+    - ceph-rgw
+  post_tasks:
+    - name: restart radosgw
+      service: >
+        name=radosgw-instance
+        state=restarted
+        args=id=rgw.{{ inventory_hostname_short }}

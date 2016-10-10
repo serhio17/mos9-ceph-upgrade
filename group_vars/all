@@ -1,0 +1,50 @@
+---
+
+cephx: true # enable auth
+
+osd_objectstore: filestore
+osd_mkfs_type: xfs
+journal_size: 3072 # MB
+
+pool_default_size: 3
+pool_default_min_size: 2
+pool_default_pg_num: 128
+pool_default_pgp_num: 128
+
+# set by inventory script, can be overriden here:
+# monitor_interface: eth1
+# public_network: 10.253.0.0/24
+# cluster_network: 10.250.0.0/24
+
+ceph_origin: 'distro' # don't add any APT repos, use the exiting ones
+ceph_release: 'hammer'
+
+# apt_enable_untrusted: false
+gpg_keyserver: 'keyserver.ubuntu.com'
+
+ceph_apt_repo:
+   url: "deb http://asheplyakov.srt.mirantis.net/Public/repos/ceph {{ ceph_release }}-{{ os_release }} main"
+   label: "sa-{{ ceph_release }}-{{ os_release }}"
+   gpg_keyid: 69514C18 # A254F5F0
+   priority: 1050
+ 
+use_mos_ceph: false
+mos_version: 9.0
+
+# ceph_apt_repo:
+#   url: "deb http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_version }} mos{{ mos_version }} main"
+#   gpg_keyid: 1FA22B08
+#   gpg_keyurl: "http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_version }}/archive-mos{{ mos_version }}.key"
+
+max_open_files: 131072
+
+radosgw_dns_name: saceph-rgw.vm.ceph.asheplyakov # subdomains used by radosgw. See http://ceph.com/docs/master/radosgw/config/#enabling-subdomain-s3-calls
+radosgw_frontend: civetweb
+radosgw_civetweb_port: 8080
+radosgw_civetweb_bind_ip: 0.0.0.0
+
+ntp_server: 10.253.0.1
+sync_time: true
+
+
+become: True

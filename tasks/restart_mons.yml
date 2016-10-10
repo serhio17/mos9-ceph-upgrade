@@ -1,0 +1,26 @@
+---
+
+- name: find out monitor interface
+  shell: netstat -nptl | awk '/ceph-mon/ { sub(":.*", "", $4); print $4 }'
+  register: monitor_ip
+
+- name: restart ceph monitor
+  service: >
+    name=ceph-mon
+    state=restarted
+    args=id={{ inventory_hostname_short }}
+
+- name: wait for monitor to start up
+  wait_for: >
+    host={{ monitor_ip.stdout }}
+    port=6789
+    state=started
+    timeout=60
+
+- name: wait for monitor to join the quorum
+  command: ceph -s --format json
+  register: ceph_health_raw
+  until: inventory_hostname_short in (ceph_health_raw.stdout|from_json)['quorum_names']
+  retries: "{{ mon_restart_attempts }}"
+  delay: "{{ mon_restart_delay }}"
+
