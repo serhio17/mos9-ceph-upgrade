@@ -7,6 +7,13 @@
     sed -e 's/{{ cluster_name }}-//'
   register: osd_ids
 
+- name: disable data rebalancing and scrubbing
+  command: ceph osd set {{ item }}
+  with_items:
+    - noout
+    - noscrub
+    - "nodeep-scrub"
+
 - name: restart OSDs
   service: >
     name=ceph-osd
@@ -54,4 +61,12 @@
   until: (pg_dump_post.stdout|from_json)['pg_stats']|groupby('state')|map(attribute='grouper')|join == 'active+clean'
   retries: "{{ osd_restart_attempts }}"
   delay: "{{ osd_restart_delay }}"
+
+
+- name: reenable data rebalancing and scrubbing
+  command: ceph osd unset {{ item }}
+  with_items:
+    - noout
+    - noscrub
+    - "nodeep-scrub"
 

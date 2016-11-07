@@ -1,0 +1,8 @@
+---
+
+- name: upgrade ceph packages
+  command: >
+    apt-get -o Dpkg::Options::="--force-overwrite" -y install
+    {{ debian_radosgw_packages|join(' ') }}
+    {{ debian_ceph_packages|join(' ') }}
+

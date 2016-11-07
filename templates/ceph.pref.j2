@@ -1,3 +1,8 @@
 Package: *
+{% if ceph_apt_repo.label is defined %}
 Pin: release l={{ ceph_apt_repo.label }}
+{% endif %}
+{% if ceph_apt_repo.origin is defined %}
+Pin: release o={{ ceph_apt_repo.origin }}
+{% endif %}
 Pin-Priority: {{ ceph_apt_repo.priority }}

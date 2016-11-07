@@ -1,50 +1,60 @@
 ---
 
-cephx: true # enable auth
+ansible_user: root
+cluster_name: ceph
 
-osd_objectstore: filestore
-osd_mkfs_type: xfs
-journal_size: 3072 # MB
+mon_restart_delay: 10
+mon_restart_attempts: 10
 
-pool_default_size: 3
-pool_default_min_size: 2
-pool_default_pg_num: 128
-pool_default_pgp_num: 128
+osd_restart_delay: 60
+osd_restart_attempts: 10
 
-# set by inventory script, can be overriden here:
-# monitor_interface: eth1
-# public_network: 10.253.0.0/24
-# cluster_network: 10.250.0.0/24
+# ntp_server: "10.20.0.2"
+# do_time_sync: true
 
-ceph_origin: 'distro' # don't add any APT repos, use the exiting ones
-ceph_release: 'hammer'
 
-# apt_enable_untrusted: false
-gpg_keyserver: 'keyserver.ubuntu.com'
+# In order to use ceph packages from non-MOS repository uncomment
+# the following line and define ceph_apt_repo
+# use_mos_ceph: false
 
-ceph_apt_repo:
-   url: "deb http://asheplyakov.srt.mirantis.net/Public/repos/ceph {{ ceph_release }}-{{ os_release }} main"
-   label: "sa-{{ ceph_release }}-{{ os_release }}"
-   gpg_keyid: 69514C18 # A254F5F0
-   priority: 1050
- 
-use_mos_ceph: false
-mos_version: 9.0
-
+# Custom ceph packages
+# ceph_release: hammer
+# os_release: trusty
 # ceph_apt_repo:
-#   url: "deb http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_version }} mos{{ mos_version }} main"
-#   gpg_keyid: 1FA22B08
-#   gpg_keyurl: "http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_version }}/archive-mos{{ mos_version }}.key"
+#   url: "deb http://172.18.76.59/Public/repos/ceph {{ ceph_release }}-{{ os_release }} main"
+#   label: "sa-{{ ceph_release }}-{{ os_release }}"
+#   gpg_keyserver: keyserver.ubuntu.com
+#   gpg_keyid: 69514C18 # A254F5F0
+#   priority: 1099
 
-max_open_files: 131072
+# Upstream ceph packages
+# ceph_apt_repo:
+#  url: "deb https://download.ceph.com/debian-{{ ceph_release }} {{ os_release }} main"
+#  gpg_keyurl: https://download.ceph.com/keys/release.asc
+#  gpg_keyid: 460F3994
+#  origin: "RedHat"
+#  priority: 1099
 
-radosgw_dns_name: saceph-rgw.vm.ceph.asheplyakov # subdomains used by radosgw. See http://ceph.com/docs/master/radosgw/config/#enabling-subdomain-s3-calls
-radosgw_frontend: civetweb
-radosgw_civetweb_port: 8080
-radosgw_civetweb_bind_ip: 0.0.0.0
+# MOS -proposed packages
+# test_mos_ceph: true
+# mos_release: 9.0
+# ceph_apt_repo:
+#   url: "deb http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }}-proposed main"
+#   origin: Mirantis
+#   priority: 1099
+#   gpg_keyid: BCE5CC461FA22B08
+#   gpg_keyurl: "http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}-proposed.key
 
-ntp_server: 10.253.0.1
-sync_time: true
 
+debian_ceph_packages:
+  - ceph
+  - ceph-common    #|
+  - ceph-fs-common #|--> yes, they are already all dependencies from 'ceph'
+  - ceph-fuse      #|--> however while proceding to rolling upgrades and the 'ceph' package upgrade
+  - libcephfs1     #|--> they don't get update so we need to force them
+  - librbd1
+  - librados2
 
-become: True
+debian_radosgw_packages:
+  - radosgw
+

@@ -12,7 +12,7 @@
     owner=root
     group=root
     mode=0644
-  when: "{{ not((use_mos_ceph|default(False))|bool) }}"
+  when: "{{ not((test_mos_ceph|default(False))|bool) }}"
 
 - name: make pinning rules for MOS ceph packages
   template: >
@@ -21,7 +21,7 @@
     owner=root
     group=root
     mode=0644
-  when: "{{ use_mos_ceph|default(False)|bool }}"
+  when: "{{ test_mos_ceph|default(False)|bool }}"
 
 - name: enable untrusted repositories
   template: >
@@ -48,13 +48,11 @@
 - name: import custom repo keyring
   apt_key: >
     id={{ ceph_apt_repo.gpg_keyid }}
-    keyserver={{ gpg_keyserver }}
+    keyserver={{ ceph_apt_repo.gpg_keyserver }}
     keyring=/etc/apt/trusted.gpg.d/ceph.gpg
-  environment:
-    http_proxy: "{{ apt_http_proxy.stdout_lines[0] }}"
   when:
     - "{{ not(apt_enable_untrusted|default(False)|bool) }}"
-    - "{{ not(use_mos_ceph|default(False)|bool) }}"
+    - "{{ not(test_mos_ceph|default(False)|bool) }}"
 
 - name: import MOS repo keyring
   apt_key: >
@@ -62,11 +60,9 @@
     url={{ ceph_apt_repo.gpg_keyurl }}
     keyring=/etc/apt/trusted.gpg.d/ceph.gpg
     state=present
-  environment:
-    http_proxy: "{{ apt_http_proxy.stdout_lines[0] }}"
   when:
     - "{{ not(apt_enable_untrusted|default(False)|bool) }}"
-    - "{{ use_mos_ceph|default(False)|bool }}"
+    - "{{ test_mos_ceph|default(False)|bool }}"
 
 - name: remove stale /etc/apt/sources.list.d/mos_ceph.list
   file: >
