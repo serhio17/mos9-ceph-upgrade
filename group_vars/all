@@ -40,10 +40,16 @@ osd_restart_attempts: 10
 # mos_release: 9.0
 # ceph_apt_repo:
 #   url: "deb http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }}-proposed main"
-#   origin: Mirantis
-#   priority: 1099
 #   gpg_keyid: BCE5CC461FA22B08
 #   gpg_keyurl: "http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}-proposed.key
+
+# MOS "stable" packages
+# test_mos_ceph: true
+# mos_release: 9.0
+# ceph_apt_repo:
+#   url: "deb http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }} main
+#   gpg_keyid: BCE5CC461FA22B08
+#   gpg_keyurl: "http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}.key"
 
 
 debian_ceph_packages:
