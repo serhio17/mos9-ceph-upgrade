@@ -13,6 +13,7 @@
     - noout
     - noscrub
     - "nodeep-scrub"
+  delegate_to: "{{ groups.mons[0] }}"
 
 - name: restart OSDs
   service: >
@@ -69,4 +70,5 @@
     - noout
     - noscrub
     - "nodeep-scrub"
+  delegate_to: "{{ groups.mons[0] }}"
 
