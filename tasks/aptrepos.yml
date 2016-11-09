@@ -1,5 +1,20 @@
 ---
 
+- name: choose MOS testing repository
+  set_fact:
+    ceph_apt_repo: "{{ mos_test_repo }}"
+  when: "{{ use_mos_test_repo|default(False)|bool }}"
+
+- name: choose custom repository
+  set_fact:
+    ceph_apt_repo: "{{ custom_ceph_repo }}"
+  when: "{{ use_custom_repo|default(False)|bool }}"
+
+- name: choose upstream repository
+  set_fact:
+    ceph_apt_repo: "{{ ceph_community_repo }}"
+  when: "{{ use_ceph_community_repo|default(False)|bool }}"
+
 - name: make sure python-apt is installed
   package: >
     name=python-apt
@@ -12,7 +27,7 @@
     owner=root
     group=root
     mode=0644
-  when: "{{ not((test_mos_ceph|default(False))|bool) }}"
+  when: "{{ not((use_mos_test_repo|default(False))|bool) }}"
 
 - name: make pinning rules for MOS ceph packages
   template: >
@@ -21,7 +36,7 @@
     owner=root
     group=root
     mode=0644
-  when: "{{ test_mos_ceph|default(False)|bool }}"
+  when: "{{ use_mos_test_repo|default(False)|bool }}"
 
 - name: enable untrusted repositories
   template: >
@@ -45,16 +60,29 @@
   failed_when: false
   when: "{{ not(apt_enable_untrusted|default(False)|bool) }}"
 
-- name: import custom repo keyring
+- name: import repo keyring from keyserver
   apt_key: >
     id={{ ceph_apt_repo.gpg_keyid }}
     keyserver={{ ceph_apt_repo.gpg_keyserver }}
     keyring=/etc/apt/trusted.gpg.d/ceph.gpg
   when:
     - "{{ not(apt_enable_untrusted|default(False)|bool) }}"
-    - "{{ not(test_mos_ceph|default(False)|bool) }}"
+    - apt_http_proxy.stdout == ''
+    - ceph_apt_repo.gpg_keyserver is defined
 
-- name: import MOS repo keyring
+- name: import repo keyring from keyserver via proxy
+  apt_key: >
+    id={{ ceph_apt_repo.gpg_keyid }}
+    keyserver={{ ceph_apt_repo.gpg_keyserver }}
+    keyring=/etc/apt/trusted.gpg.d/ceph.gpg
+  environment:
+    http_proxy: "{{ apt_http_proxy.stdout }}"
+  when:
+    - "{{ not(apt_enable_untrusted|default(False)|bool) }}"
+    - apt_http_proxy.stdout != ''
+    - ceph_apt_repo.gpg_keyserver is defined
+
+- name: import repo keyring from URL
   apt_key: >
     id={{ ceph_apt_repo.gpg_keyid }}
     url={{ ceph_apt_repo.gpg_keyurl }}
@@ -62,7 +90,22 @@
     state=present
   when:
     - "{{ not(apt_enable_untrusted|default(False)|bool) }}"
-    - "{{ test_mos_ceph|default(False)|bool }}"
+    - apt_http_proxy.stdout == ''
+    - ceph_apt_repo.gpg_keyurl is defined
+
+- name: import repo keyring from URL via proxy
+  apt_key: >
+    id={{ ceph_apt_repo.gpg_keyid }}
+    url={{ ceph_apt_repo.gpg_keyurl }}
+    keyring=/etc/apt/trusted.gpg.d/ceph.gpg
+    state=present
+  environment:
+    http_proxy: "{{ apt_http_proxy.stdout }}"
+  when:
+    - "{{ not(apt_enable_untrusted|default(False)|bool) }}"
+    - apt_http_proxy.stdout != ''
+    - ceph_apt_repo.gpg_keyurl is defined
+
 
 - name: remove stale /etc/apt/sources.list.d/mos_ceph.list
   file: >

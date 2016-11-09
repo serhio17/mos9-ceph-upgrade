@@ -13,40 +13,46 @@ osd_restart_attempts: 10
 # do_time_sync: true
 
 
+# don't change this unless you know what are you doing
+mos_release: 9.0
+
 # In order to use ceph packages from non-MOS repository uncomment
-# the following line and define ceph_apt_repo
-# use_mos_ceph: false
+# the following line and make your choice below
+use_mos_ceph: false
 
 # Custom ceph packages
-# ceph_release: hammer
-# os_release: trusty
-# ceph_apt_repo:
-#   url: "deb http://172.18.76.59/Public/repos/ceph {{ ceph_release }}-{{ os_release }} main"
-#   label: "sa-{{ ceph_release }}-{{ os_release }}"
-#   gpg_keyserver: keyserver.ubuntu.com
-#   gpg_keyid: 69514C18 # A254F5F0
-#   priority: 1099
+use_custom_repo: false
+ceph_release: hammer
+os_release: trusty
+custom_ceph_repo:
+  url: "deb http://172.18.76.59/Public/repos/ceph {{ ceph_release }}-{{ os_release }} main"
+  label: "sa-{{ ceph_release }}-{{ os_release }}"
+  gpg_keyserver: keyserver.ubuntu.com
+  gpg_keyid: 69514C18 # A254F5F0
+  priority: 1099
 
 # Upstream ceph packages
-# ceph_apt_repo:
-#  url: "deb https://download.ceph.com/debian-{{ ceph_release }} {{ os_release }} main"
-#  gpg_keyurl: https://download.ceph.com/keys/release.asc
-#  gpg_keyid: 460F3994
-#  origin: "RedHat"
-#  priority: 1099
+# BIG RED WARNING: using these packages will IRREVERSIBLY BREAK your cluster
+use_ceph_community_repo: false
+ceph_community_repo:
+  url: "deb http://download.ceph.com/debian-{{ ceph_release }} {{ os_release }} main"
+  gpg_keyurl: http://download.ceph.com/keys/release.asc
+  gpg_keyid: 460F3994
+  origin: "RedHat"
+  priority: 1099
 
 # MOS -proposed packages
-# test_mos_ceph: true
-# mos_release: 9.0
-# ceph_apt_repo:
-#   url: "deb http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }}-proposed main"
-#   gpg_keyid: BCE5CC461FA22B08
-#   gpg_keyurl: "http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}-proposed.key
+use_mos_test_repo: true
+mos_test_repo:
+  url: "deb http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }}-proposed main"
+  gpg_keyid: BCE5CC461FA22B08
+  gpg_keyurl: "http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}-proposed.key"
+
 
 # MOS "stable" packages
-# test_mos_ceph: true
+# use_mos_stable_repo: false
 # mos_release: 9.0
-# ceph_apt_repo:
+# mos_stable_repo:
 #   url: "deb http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }} main
 #   gpg_keyid: BCE5CC461FA22B08
 #   gpg_keyurl: "http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}.key"
