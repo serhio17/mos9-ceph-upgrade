@@ -7,8 +7,8 @@ Synopsis
 
 * `Preparations`_
 * `Preflight checks`_
-* `Upgrading ceph cluster`_
-* `Restarting VMs`_
+* `Upgrade ceph cluster`_
+* `Restart VMs`_
 
 
 Preparations
@@ -45,7 +45,7 @@ Preflight checks
   (either directly or via a proxy) on monitor, OSD, and client nodes.
 
 
-Upgrading ceph cluster
+Upgrade ceph cluster
 ----------------------
 
 * On the ``admin`` node run::
