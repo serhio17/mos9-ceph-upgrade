@@ -15,6 +15,7 @@ Preparations
 ------------
 
 * Pick a ``admin`` node running Ubuntu 14.04 and
+
   - install ansible 2.0.x, 2.1.x, or 2.2.x
   - configure passwordless ssh connection to all monitor, OSD, and client nodes,
     the remote user should be either root or a user having unlimited passwordless
@@ -50,7 +51,7 @@ Upgrade ceph cluster
 
 * On the ``admin`` node run::
 
-  ansible-playbook -i hosts site.yml
+    ansible-playbook -i hosts site.yml
 
 
 Restart VMs
