@@ -1,0 +1,25 @@
+---
+
+- hosts: clients
+  become: True
+  tasks:
+    - name: install fio package
+      package: >
+        name=fio state=installed
+    - name: copy test load script
+      copy: >
+        src=./scripts/run-rbd-fio.sh
+        dest=/usr/local/bin/run-rbd-fio.sh
+        owner=root
+        group=root
+        mode=0755
+    - name: stop multipath-tools service
+      service: >
+        name=multipath-tools 
+        state=stopped
+    - name: launch test load script
+      command: /usr/local/bin/run-rbd-fio.sh "{{ test_load_duration }}"
+      async: "{{ test_load_duration }}"
+      poll: 15
+  vars:
+    test_load_duration: 7200
