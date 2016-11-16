@@ -14,21 +14,27 @@ Synopsis
 Preparations
 ------------
 
-* Pick a ``admin`` node running Ubuntu 14.04 and
+* Install ansible 2.2.x on the master node
 
-  - install ansible 2.0.x, 2.1.x, or 2.2.x
-  - configure passwordless ssh connection to all monitor, OSD, and client nodes,
-    the remote user should be either root or a user having unlimited passwordless
-    sudo permissions
+  - Enable EPEL repository::
 
-* Clone this repository::
+      wget -N https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      yum install epel-release-latest-7.noarch.rpm
+
+  - Install ``ansible`` package::
+
+      yum install ansible
+
+* Clone this repository (on the master node)::
 
     git clone https://github.com/asheplyakov/mos9-ceph-upgrade.git
 
 * Prepare inventory file ``hosts`` which lists all monitor, OSD, and client
-  nodes, use ``hosts.sample`` as an example. Note: one *must* use hostnames
-  (either short or fully qualified), listing just an IP address of a node
-  won't work (and can break the cluster).
+  nodes using the ``scripts/make_fuel_inventory.sh`` script.
+  Use the ``hosts.sample`` example to check if the generated inventory file
+  makes sense. Note: inventory *must* use hostnames (either short or fully
+  qualified), listing just an IP address of a node won't work (and can break
+  the cluster).
 
 
 Preflight checks
@@ -45,11 +51,16 @@ Preflight checks
 * Check if `apt-get`` can access Ubuntu and MOS APT repositories
   (either directly or via a proxy) on monitor, OSD, and client nodes.
 
+* (For QA only) In order to generate a test load (so bugs in ceph and upgrade
+  scenario can be exposed) run on the master node::
+
+    ansible-playbook -i hosts make_test_load.yml
+
 
 Upgrade ceph cluster
 ----------------------
 
-* On the ``admin`` node run::
+* On the master node run::
 
     ansible-playbook -i hosts site.yml
 
