@@ -1,6 +1,6 @@
-================================================
-Upgrading Ceph from 0.94.6 to 0.94.9 in MOS 9.x
-================================================
+============================================================
+Non-disrupting Ceph upgrade from 0.94.6 to 0.94.9 in MOS 9.x
+============================================================
 
 Synopsis
 --------
@@ -42,6 +42,9 @@ See the `official changelog`_ for more details.
 
 Preparations
 ------------
+
+Please note that the upgrade procedure does not disrupt clients (such as VMs
+using rbd images).
 
 * Install ansible 2.2.x on the master node
 
@@ -97,11 +100,13 @@ Upgrade ceph cluster
 Restart VMs
 -----------
 
-In order to apply client libraries (``librados2.so`` and ``librbd1.so``) fixes
-it's necessary to restart qemu processes serving VMs and other services which
-using ceph cluster. Note that the VMs which haven't been restarted will keep
-using the old (buggy) version of rbd client library (``librbd1.so``) and might
-hit the `rbd cache data corruption`_ bug.
+Although the upgrading servers (monitors and OSDs) according to the above
+instructions does not disrupt clients, it's necessary to restart qemu
+processes serving VMs (and other services which use ceph) In order to apply
+client libraries (``librados2.so`` and ``librbd1.so``) fixes. Note that
+the VMs (and daemons) which haven't been restarted will keep using the old
+(buggy) version of rbd client library (``librbd1.so``) and might hit
+the `rbd cache data corruption`_ bug.
 
 .. _rbd cache data corruption: http://tracker.ceph.com/issues/17545
 
