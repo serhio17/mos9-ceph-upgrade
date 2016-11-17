@@ -5,10 +5,39 @@ Upgrading Ceph from 0.94.6 to 0.94.9 in MOS 9.x
 Synopsis
 --------
 
+* `Bugfixes and improvements`_
 * `Preparations`_
 * `Preflight checks`_
 * `Upgrade ceph cluster`_
 * `Restart VMs`_
+
+
+Bugfixes and improvements
+--------------------------
+
+The most notable changes:
+
+* librbd: possible QEMU deadlock after creating image snapshots,
+  http://tracker.ceph.com/issues/14988
+* osd: corruption when min_read_recency_for_promote > 1,
+  http://tracker.ceph.com/issues/15171
+* data corruption using RBD with caching enabled,
+  http://tracker.ceph.com/issues/17545
+* monitor crashes on a command without a prefix (CVE-2016-5009),
+  http://tracker.ceph.com/issues/16297
+* OSD reports ENOTEMPTY and crashes,
+  http://tracker.ceph.com/issues/14766
+* osd: Unable to bring up OSD’s after dealing with FULL cluster,
+  http://tracker.ceph.com/issues/14428
+* mon: implement reweight-by-utilization feature,
+  http://tracker.ceph.com/issues/15054
+* "no Last-Modified, Content-Size and X-Object-Manifest headers if no
+  segments in DLO manifest",
+  http://tracker.ceph.com/issues/15812
+
+See the `official changelog`_ for more details.
+
+.. _official changelog: http://docs.ceph.com/docs/hammer/release-notes/#v0-94-8-hammer
 
 
 Preparations
