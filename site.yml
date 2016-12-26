@@ -31,7 +31,6 @@
       when: "{{ do_time_sync|default(False)|bool }}"
 
     - include: ./tasks/aptrepos.yml
-      when: "{{ not(use_mos_ceph|default(True)|bool) }}"
 
     - name: grab the packages into local cache
       command: >

@@ -1,9 +1,9 @@
 ---
 
-- name: choose MOS testing repository
+- name: choose decapod repository
   set_fact:
-    ceph_apt_repo: "{{ mos_test_repo }}"
-  when: "{{ use_mos_test_repo|default(False)|bool }}"
+    ceph_apt_repo: "{{ decapod_ceph_repo }}"
+  when: "{{ use_decapod_ceph_repo|default(True)|bool }}"
 
 - name: choose custom repository
   set_fact:
@@ -27,16 +27,7 @@
     owner=root
     group=root
     mode=0644
-  when: "{{ not((use_mos_test_repo|default(False))|bool) }}"
-
-- name: make pinning rules for MOS ceph packages
-  template: >
-    src=./templates/mos-ceph.pref.j2
-    dest=/etc/apt/preferences.d/ceph.pref
-    owner=root
-    group=root
-    mode=0644
-  when: "{{ use_mos_test_repo|default(False)|bool }}"
+  when: "{{ use_decapod_ceph_repo|default(True)|bool }}"
 
 - name: enable untrusted repositories
   template: >
@@ -107,14 +98,14 @@
     - ceph_apt_repo.gpg_keyurl is defined
 
 
-- name: remove stale /etc/apt/sources.list.d/mos_ceph.list
+- name: remove stale /etc/apt/sources.list.d/decapod_ceph.list
   file: >
-    name=/etc/apt/sources.list.d/mos_ceph.list
+    name=/etc/apt/sources.list.d/decapod_ceph.list
     state=absent
 
 - name: add the repo with custom packages
   apt_repository: >
     repo="{{ ceph_apt_repo.url }}"
-    filename=mos_ceph
+    filename=decapod_ceph
     state=present
     update_cache=yes

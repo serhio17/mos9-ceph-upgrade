@@ -13,19 +13,16 @@ osd_restart_attempts: 10
 # do_time_sync: true
 
 
-# don't change this unless you know what are you doing
-mos_release: 9.0
-
 # In order to use ceph packages from non-MOS repository uncomment
 # the following line and make your choice below
 use_mos_ceph: false
 
-# Custom ceph packages
-use_custom_repo: false
+# decapod ceph repositories
 ceph_release: hammer
-os_release: trusty
-custom_ceph_repo:
-  url: "deb http://172.18.76.59/Public/repos/ceph {{ ceph_release }}-{{ os_release }} main"
+os_release: precise
+
+decapod_ceph_repo:
+  url: "deb http://perestroika-repo-tst.infra.mirantis.net/decapod/ceph-by-release/{{ ceph_release }}-{{ os_release }} {{ ceph_release }}-{{ os_release }} main"
   label: "sa-{{ ceph_release }}-{{ os_release }}"
   gpg_keyserver: keyserver.ubuntu.com
   gpg_keyid: 69514C18 # A254F5F0
@@ -40,23 +37,6 @@ ceph_community_repo:
   gpg_keyid: 460F3994
   origin: "RedHat"
   priority: 1099
-
-# MOS -proposed packages
-use_mos_test_repo: true
-mos_test_repo:
-  url: "deb http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }}-proposed main"
-  gpg_keyid: BCE5CC461FA22B08
-  gpg_keyurl: "http://perestroika-repo-tst.infra.mirantis.net/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}-proposed.key"
-
-
-# MOS "stable" packages
-# use_mos_stable_repo: false
-# mos_release: 9.0
-# mos_stable_repo:
-#   url: "deb http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_release }} mos{{ mos_release }} main
-#   gpg_keyid: BCE5CC461FA22B08
-#   gpg_keyurl: "http://mirror.fuel-infra.org/mos-repos/ubuntu/{{ mos_release }}/archive-mos{{ mos_release }}.key"
-
 
 debian_ceph_packages:
   - ceph

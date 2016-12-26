@@ -1,43 +1,14 @@
-============================================================
-Non-disrupting Ceph upgrade from 0.94.6 to 0.94.9 in MOS 9.x
-============================================================
+=====================================================================
+Non-disrupting Ceph upgrade from Firefly (0.80.10) to Hammer (0.94.9)
+=====================================================================
 
 Synopsis
 --------
 
-* `Bugfixes and improvements`_
 * `Preparations`_
 * `Preflight checks`_
 * `Upgrade ceph cluster`_
 * `Restart VMs`_
-
-
-Bugfixes and improvements
---------------------------
-
-The most notable changes:
-
-* librbd: possible QEMU deadlock after creating image snapshots,
-  http://tracker.ceph.com/issues/14988
-* osd: corruption when min_read_recency_for_promote > 1,
-  http://tracker.ceph.com/issues/15171
-* data corruption using RBD with caching enabled,
-  http://tracker.ceph.com/issues/17545
-* monitor crashes on a command without a prefix (CVE-2016-5009),
-  http://tracker.ceph.com/issues/16297
-* OSD reports ENOTEMPTY and crashes,
-  http://tracker.ceph.com/issues/14766
-* osd: Unable to bring up OSD’s after dealing with FULL cluster,
-  http://tracker.ceph.com/issues/14428
-* mon: implement reweight-by-utilization feature,
-  http://tracker.ceph.com/issues/15054
-* "no Last-Modified, Content-Size and X-Object-Manifest headers if no
-  segments in DLO manifest",
-  http://tracker.ceph.com/issues/15812
-
-See the `official changelog`_ for more details.
-
-.. _official changelog: http://docs.ceph.com/docs/hammer/release-notes/#v0-94-8-hammer
 
 
 Preparations
@@ -46,20 +17,15 @@ Preparations
 Please note that the upgrade procedure does not disrupt clients (such as VMs
 using rbd images).
 
-* Install ansible 2.2.x on the master node
+* Install ansible 2.2.x on the master node, see `ansible official docs`_
+  for the details
 
-  - Enable EPEL repository::
-
-      wget -N https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-      yum install epel-release-latest-7.noarch.rpm
-
-  - Install ``ansible`` package::
-
-      yum install ansible
+.. _ansible official docs: http://docs.ansible.com/ansible/intro_installation.html#installing-the-control-machine
 
 * Clone this repository (on the master node)::
 
     git clone https://github.com/asheplyakov/mos9-ceph-upgrade.git
+    git checkout -b firefly_hammer origin/firefly_hammer
 
 * Prepare inventory file ``hosts`` which lists all monitor, OSD, and client
   nodes using the ``scripts/make_fuel_inventory.sh`` script.
