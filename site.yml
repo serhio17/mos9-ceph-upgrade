@@ -14,6 +14,7 @@
     - mons
     - osds
     - clients
+    - rgws
 
   become: True
   pre_tasks:
@@ -72,4 +73,12 @@
   become: True
   tasks:
     - include: ./tasks/install_upgrade_packages.yml
+
+
+- hosts: rgws
+  become: True
+  serial: 1
+  tasks:
+    - include: ./tasks/install_upgrade_packages.yml
+    - include: ./tasks/restart_rgws.yml
 

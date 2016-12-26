@@ -1,0 +1,24 @@
+---
+
+- name: find out radosgw interface
+  shell: netstat -ntpl | awk '/radosgw/ { sub(":.*", "", $4); print $4 }'
+  register: radosgw_ip
+
+
+- name: find out radosgw port
+  shell: netstat -ntpl | awk '/radosgw/ { sub(".*:", "", $4); print $4 }'
+  register: radosgw_port
+
+- name: restart radosgw
+  service: >
+    name=radosgw-instance
+    state=restarted
+    args=id=rgw.{{ inventory_hostname_short }}
+
+- name: wait for radosgw to start up
+  wait_for: >
+    host={{ radosgw_ip.stdout if radosgw_ip.stdout != '0.0.0.0' else '127.0.0.1' }}
+    port={{ radosgw_port.stdout }}
+    state=started
+    timeout={{ radosgw_restart_delay }}
+

@@ -9,6 +9,8 @@ mon_restart_attempts: 10
 osd_restart_delay: 60
 osd_restart_attempts: 10
 
+radosgw_restart_delay: 20
+
 # ntp_server: "10.20.0.2"
 # do_time_sync: true
 
