@@ -24,7 +24,7 @@ ceph_release: hammer
 os_release: precise
 
 decapod_ceph_repo:
-  url: "deb http://perestroika-repo-tst.infra.mirantis.net/decapod/ceph-by-release/{{ ceph_release }}-{{ os_release }} {{ ceph_release }}-{{ os_release }} main"
+  url: "deb http://mirror.fuel-infra.org/decapod/ceph/{{ ceph_release }}-{{ os_release }} {{ ceph_release }}-{{ os_release }} main"
   label: "sa-{{ ceph_release }}-{{ os_release }}"
   gpg_keyserver: keyserver.ubuntu.com
   gpg_keyid: 69514C18 # A254F5F0
